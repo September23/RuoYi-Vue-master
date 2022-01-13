@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysGoodsMapper">
+    
+    <resultMap type="SysGoods" id="SysGoodsResult">
+        <result property="goodsId"    column="goods_id"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="name"    column="name"    />
+        <result property="weight"    column="weight"    />
+        <result property="price"    column="price"    />
+        <result property="date"    column="date"    />
+        <result property="type"    column="type"    />
+    </resultMap>
+
+    <sql id="selectSysGoodsVo">
+        select goods_id, customer_id, name, weight, price, date, type from sys_goods
+    </sql>
+
+    <select id="selectSysGoodsList" parameterType="SysGoods" resultMap="SysGoodsResult">
+        <include refid="selectSysGoodsVo"/>
+        <where>  
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="weight != null "> and weight = #{weight}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="date != null "> and date = #{date}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysGoodsByGoodsId" parameterType="Long" resultMap="SysGoodsResult">
+        <include refid="selectSysGoodsVo"/>
+        where goods_id = #{goodsId}
+    </select>
+        
+    <insert id="insertSysGoods" parameterType="SysGoods" useGeneratedKeys="true" keyProperty="goodsId">
+        insert into sys_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">customer_id,</if>
+            <if test="name != null">name,</if>
+            <if test="weight != null">weight,</if>
+            <if test="price != null">price,</if>
+            <if test="date != null">date,</if>
+            <if test="type != null">type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">#{customerId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="weight != null">#{weight},</if>
+            <if test="price != null">#{price},</if>
+            <if test="date != null">#{date},</if>
+            <if test="type != null">#{type},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysGoods" parameterType="SysGoods">
+        update sys_goods
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="date != null">date = #{date},</if>
+            <if test="type != null">type = #{type},</if>
+        </trim>
+        where goods_id = #{goodsId}
+    </update>
+
+    <delete id="deleteSysGoodsByGoodsId" parameterType="Long">
+        delete from sys_goods where goods_id = #{goodsId}
+    </delete>
+
+    <delete id="deleteSysGoodsByGoodsIds" parameterType="String">
+        delete from sys_goods where goods_id in 
+        <foreach item="goodsId" collection="array" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+    </delete>
+</mapper>
